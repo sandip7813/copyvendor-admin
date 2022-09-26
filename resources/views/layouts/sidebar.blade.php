@@ -58,15 +58,20 @@
               </li>
             </ul>
           </li>
+
+          {{-- LOGOUT :: Start --}}
           <li class="nav-item">
-            <a href="#" class="nav-link">
-              <i class="nav-icon fas fa-th"></i>
-              <p>
-                Simple Link
-                <span class="right badge badge-danger">New</span>
-              </p>
+            <a href="{{ route('logout') }}" class="nav-link" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+              <i class="fas fa-sign-out-alt"></i>
+              <p>Logout</p>
             </a>
           </li>
+
+          <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+              {{ csrf_field() }}
+          </form>
+          {{-- LOGOUT :: End --}}
+
         </ul>
       </nav>
       <!-- /.sidebar-menu -->
