@@ -20,7 +20,7 @@ Route::get('/', function () {
     return Redirect::to('login');
 });
 
-Route::group(['middleware'=>'auth'],function(){
+Route::namespace('Admin')->middleware(['auth'])->group(function () {
     Route::get('/dashboard', 'HomeController@dashboard')->name('dashboard');
 });
 Route::group(['middleware'=>['auth','role:editor']],function(){
