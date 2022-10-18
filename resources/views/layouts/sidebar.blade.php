@@ -1,8 +1,8 @@
 <!-- Main Sidebar Container -->
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
-    <a href="index3.html" class="brand-link">
-      <img src="dist/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+    <a href="{{ route('dashboard') }}" class="brand-link">
+      <img src="{{ asset('dist/img/AdminLTELogo.png') }}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
       <span class="brand-text font-weight-light">CopyVendor</span>
     </a>
 
@@ -21,13 +21,33 @@
       <!-- Sidebar Menu -->
       <nav class="mt-2">
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-          <li class="nav-item menu-open">
-            <a href="{{ route('dashboard') }}" class="nav-link active">
+          <li class="nav-item">
+            <a href="{{ route('dashboard') }}" class="nav-link @if (Request::is('dashboard')) active @endif">
               <i class="nav-icon fas fa-tachometer-alt"></i>
-              <p>
-                Dashboard
-              </p>
+              <p>Dashboard</p>
             </a>
+          </li>
+
+          <li class="nav-item @if (Request::is('category') || Request::is('category/*')) menu-open @endif">
+            <a href="{{ route('dashboard') }}" class="nav-link @if (Request::is('category/*')) active @endif">
+              <i class="nav-icon fas fa-th"></i>
+              <p>Categories <i class="right fas fa-angle-left"></i></p>
+            </a>
+
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{{ route('category.index') }}" class="nav-link @if (Request::is('category')) active @endif">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Manage Categories</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{{ route('category.create') }}" class="nav-link @if (Request::is('category/create')) active @endif">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Add Category</p>
+                </a>
+              </li>
+            </ul>
           </li>
 
           {{-- LOGOUT :: Start --}}

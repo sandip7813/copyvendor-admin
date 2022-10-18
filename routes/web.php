@@ -22,6 +22,13 @@ Route::get('/', function () {
 
 Route::namespace('Admin')->middleware(['auth'])->group(function () {
     Route::get('/dashboard', 'HomeController@dashboard')->name('dashboard');
+
+    Route::resource('category', 'CategoryController')->except(['store', 'show', 'update', 'destroy']);
+    Route::post('add-category-submit', 'CategoryController@addCategorySubmit')->name('add-category-submit');
+    Route::post('update-category-submit', 'CategoryController@updateCategorySubmit')->name('update-category-submit');
+    Route::post('change-category-status', 'CategoryController@changeCategoryStatus')->name('change-category-status');
+    Route::post('delete-category', 'CategoryController@deleteCategory')->name('delete-category');
+    Route::post('regenerate-slug', 'CategoryController@regenerateSlug')->name('regenerate-slug');
 });
 Route::group(['middleware'=>['auth','role:editor']],function(){
     Route::get('role',function(){
