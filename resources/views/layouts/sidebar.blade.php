@@ -28,8 +28,30 @@
             </a>
           </li>
 
+          <li class="nav-item @if (Request::is('blog') || Request::is('blog/*')) menu-open @endif">
+            <a href="javascript: void(0);" class="nav-link @if (Request::is('blog/*')) active @endif">
+              <i class="nav-icon fas fa-newspaper"></i>
+              <p>Blogs <i class="right fas fa-angle-left"></i></p>
+            </a>
+
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{{ route('blog.index') }}" class="nav-link @if (Request::is('blog/index')) active @endif">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Manage Blogs</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{{ route('blog.create') }}" class="nav-link @if (Request::is('blog/create')) active @endif">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Post Blog</p>
+                </a>
+              </li>
+            </ul>
+          </li>
+
           <li class="nav-item @if (Request::is('category') || Request::is('category/*')) menu-open @endif">
-            <a href="{{ route('dashboard') }}" class="nav-link @if (Request::is('category/*')) active @endif">
+            <a href="javascript: void(0);" class="nav-link @if (Request::is('category/*')) active @endif">
               <i class="nav-icon fas fa-th"></i>
               <p>Categories <i class="right fas fa-angle-left"></i></p>
             </a>

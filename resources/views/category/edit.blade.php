@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
 @section('stylesheets')
-<link rel="stylesheet" href="{{ asset('plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css') }}">
 <!-- iCheck for checkboxes and radio inputs -->
 <link rel="stylesheet" href="{{ asset('plugins/icheck-bootstrap/icheck-bootstrap.min.css') }}">
 @endsection
@@ -19,7 +18,7 @@
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
               <li class="breadcrumb-item"><a href="{{ route('category.index') }}">Category</a></li>
-              <li class="breadcrumb-item active">{{ $category->name }}</li>
+              <li class="breadcrumb-item active title_wrap">{{ $category->name }}</li>
             </ol>
           </div><!-- /.col -->
         </div><!-- /.row -->
@@ -38,7 +37,7 @@
             <!-- Input addon -->
             <div class="card card-info">
                 <div class="card-header">
-                    <h3 class="card-title">Edit Category Details</h3>
+                    <h3 class="card-title title_wrap">{{ $category->name }}</h3>
                 </div>
                 <form id="add-category-form" action="javascript: void(0);">
                     <div class="card-body">
@@ -97,9 +96,6 @@
 @endsection
 
 @section('scripts')
-<script src="{{ asset('js/sweetalert2@11.js') }}"></script>
-<script src="{{ asset('plugins/sweetalert2/sweetalert2.min.js') }}"></script>
-
 <script>
   $(function () {
     $.ajaxSetup({
@@ -168,31 +164,30 @@
       $.ajax({
         dataType: 'json',
         type: 'POST',
-              data:{
-                category_uuid: '{{ $category->uuid }}',
-                category_name: category_name,
-                slug_editable: slug_editable,
-                category_slug: category_slug,
-                category_status: category_status,
-              },
-              url: "{{ route('update-category-submit') }}",
-              success:function(data) {
-                this_obj.html('Update').attr('disabled', false);
+        data:{
+          category_uuid: '{{ $category->uuid }}',
+          category_name: category_name,
+          slug_editable: slug_editable,
+          category_slug: category_slug,
+          category_status: category_status,
+        },
+        url: "{{ route('category.update-submit') }}",
+        success:function(data) {
+          this_obj.html('Update').attr('disabled', false);
 
-                if( data.status == 'failed' ){
-                  swal_fire_error(data.error.message);
-                  return false;
-                }
-                else if( data.status == 'success' ){
-                  swal_fire_success('Category info updated successfully!');
+          if( data.status == 'failed' ){
+            swal_fire_error(data.error.message);
+            return false;
+          }
+          else if( data.status == 'success' ){
+            swal_fire_success('Category info updated successfully!');
 
-                  $('#category_title_wrap').html('');
-                  add_row_html();
-                }
+            $('.title_wrap').html(category_name);
+          }
 
-                $('.btn').attr('disabled', false);
-                this_obj.html('Submit');
-              }
+          $('.btn').attr('disabled', false);
+          this_obj.html('Submit');
+        }
       });
       //
     });
@@ -205,19 +200,19 @@
     $.ajax({
       dataType: 'json',
       type: 'POST',
-            data:{
-              category_name: category_name,
-            },
-            url: "{{ route('regenerate-slug') }}",
-            success:function(data) {
-              if( data.status == 'failed' ){
-                swal_fire_error(data.error.message);
-                return false;
-              }
-              else if( data.status == 'success' ){
-                category_slug_field.val(data.category_slug);
-              }
-            }
+      data:{
+        category_name: category_name,
+      },
+      url: "{{ route('category.regenerate-slug') }}",
+      success:function(data) {
+        if( data.status == 'failed' ){
+          swal_fire_error(data.error.message);
+          return false;
+        }
+        else if( data.status == 'success' ){
+          category_slug_field.val(data.category_slug);
+        }
+      }
     });
   }
 

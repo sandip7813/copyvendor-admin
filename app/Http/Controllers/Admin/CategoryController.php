@@ -7,19 +7,27 @@ use Illuminate\Http\Request;
 
 use App\Models\Categories;
 
-use Illuminate\Support\Str;
-
 class CategoryController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        $categories = Categories::all();
-        return view('category.index', compact('categories'));
+    protected $statusArray = [
+        1 => 'Avtive',
+        0 => 'Inactive',
+    ];
+
+    public function index(Request $request){
+        $categories_qry = Categories::select('*');
+
+        if( $request->filled('cat_title') ){
+            $categories_qry->where('name', 'like', '%' . $request->cat_title . '%');
+        }
+
+        if( $request->filled('cat_status') ){
+            $categories_qry->where('status', $request->cat_status);
+        }
+
+        $categories = $categories_qry->orderby('id','desc')->paginate(15);
+
+        return view('category.index', compact('categories'))->with([ 'statusArray' => $this->statusArray ]);
     }
 
     /**
@@ -27,8 +35,7 @@ class CategoryController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
-    {
+    public function create(){
         return view('category.create');
     }
 
@@ -38,8 +45,7 @@ class CategoryController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function addCategorySubmit(Request $request)
-    {
+    public function addCategorySubmit(Request $request){
         $response = [];
 
         $response['status'] = '';
@@ -71,10 +77,8 @@ class CategoryController extends Controller
                 foreach($category_title as $cat){
                     if( trim($cat) != '' ){
                         Categories::create([
-                            'uuid' => (string) Str::uuid(),
                             'name' => $cat,
                             'slug' => Categories::generateSlug($cat),
-                            'type' => 'blog'
                         ]);
                     }
                 }
@@ -95,15 +99,13 @@ class CategoryController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($uuid)
-    {
+    public function edit($uuid){
         $category = Categories::where('uuid', $uuid)->first();
 
         return view('category.edit', compact('category'));
     }
 
-    public function updateCategorySubmit(Request $request)
-    {
+    public function updateCategorySubmit(Request $request){
         $response = [];
 
         $response['status'] = '';
@@ -157,8 +159,7 @@ class CategoryController extends Controller
         return response()->json($response);
     }
 
-    public function regenerateSlug(Request $request)
-    {
+    public function regenerateSlug(Request $request){
         $response = [];
 
         $response['status'] = '';
@@ -182,8 +183,7 @@ class CategoryController extends Controller
         return response()->json($response);
     }
 
-    public function changeCategoryStatus(Request $request)
-    {
+    public function changeCategoryStatus(Request $request){
         $response = [];
 
         $response['status'] = '';
@@ -209,8 +209,7 @@ class CategoryController extends Controller
         return response()->json($response);
     }
 
-    public function deleteCategory(Request $request)
-    {
+    public function deleteCategory(Request $request){
         $response = [];
 
         $response['status'] = '';

@@ -1,9 +1,10 @@
 @extends('layouts.app')
 
 @section('stylesheets')
-<link rel="stylesheet" href="{{ asset('plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css') }}">
-@include('includes.datatable-css')
 <link href="{{ asset('css/bootstrap-toggle.min.css') }}" rel="stylesheet">
+<!-- Select2 -->
+<link rel="stylesheet" href="{{ asset('plugins/select2/css/select2.min.css') }}">
+<link rel="stylesheet" href="{{ asset('plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css') }}">
 @endsection
 
 @section('content')
@@ -34,8 +35,43 @@
           <div class="col-12">
             <div class="card">
               <div class="card-body">
+
+                {{-- +++++++++++++++++++ SEARCH RECORDS :: Start +++++++++++++++++++ --}}
+                <div class="card card-info">
+                  <div class="card-header">
+                    <h3 class="card-title">Search Box</h3>
+                  </div>
+
+                  <div class="card-body">
+                    <form action="{{ route('category.index') }}" method="get">
+                      <div class="row">
+                        <div class="col-md-5">
+                          <input type="text" name="cat_title" class="form-control mr-2" placeholder="Category Name" value="{{ request('cat_title') }}">
+                        </div>
+
+                        <div class="col-md-2">
+                          <select name="cat_status" class="form-control select2bs4 select2_dropdown" style="width: 100%;">
+                            <option value="">Select Status</option>
+                            @foreach($statusArray as $status_key => $status_val)
+                              <option value="{{ $status_key }}" @if( request('cat_status') == $status_key ) selected @endif>{{ $status_val }}</option>
+                            @endforeach
+                          </select>
+                        </div>
+
+                        <div class="col-md-2">
+                          <button type="submit" class="btn btn-primary">Search</button> &nbsp;
+                          <a href="{{ route('category.index') }}" class="btn btn-default">Clear</a>
+                        </div>
+
+                        <div class="col-md-3"></div>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+                {{-- +++++++++++++++++++ SEARCH RECORDS :: End +++++++++++++++++++ --}}
+
                 @if( $categories->count() > 0 )
-                  <table id="datatable-list" class="table table-bordered table-hover">
+                  <table class="table table-bordered table-hover">
                     <thead>
                       <tr>
                         <th>Title</th>
@@ -70,10 +106,17 @@
                     </tfoot>
                   </table>
                 @else
-                <p>No Category found!</p>
+                  <p>No Category found!</p>
                 @endif
               </div>
               <!-- /.card-body -->
+
+              <div class="card-footer clearfix">
+                <div class="pagination-sm m-0 float-right">
+                  {{ $categories->withQueryString()->links() }}
+                </div>
+              </div>
+
             </div>
             <!-- /.card -->
 
@@ -91,27 +134,16 @@
 @endsection
 
 @section('scripts')
-<script src="{{ asset('js/sweetalert2@11.js') }}"></script>
-<script src="{{ asset('plugins/sweetalert2/sweetalert2.min.js') }}"></script>
-
-@include('includes.datatable-js')
-
 <script src="{{ asset('js/bootstrap-toggle.min.js') }}"></script>
+<!-- Select2 -->
+<script src="{{ asset('plugins/select2/js/select2.full.min.js') }}"></script>
 
 <script>
   $(function () {
-    $('#datatable-list').DataTable({
-      "paging": false,
-      "lengthChange": false,
-      "searching": true,
-      "ordering": true,
-      "info": true,
-      "autoWidth": false,
-      "responsive": true,
-      "columnDefs": [{
-          "targets": 'no-sort',
-          "orderable": false,
-      }]
+    select2_dropdown = $('.select2_dropdown');
+
+    select2_dropdown.select2({
+      theme: 'bootstrap4'
     });
 
     $.ajaxSetup({
@@ -121,7 +153,7 @@
     });
 
     //+++++++++++++++++++ UPDATE CATEGORY STATUS :: Start +++++++++++++++++++//
-    $(".status_toggle").on('change', function(){
+    $('.status_toggle').on('change', function(){
       this_obj = $(this);
       category_uuid = this_obj.data('uuid');
 
@@ -130,21 +162,21 @@
       $.ajax({
         dataType: 'json',
         type: 'POST',
-              data:{
-                category_uuid: category_uuid
-              },
-              url: "{{ route('change-category-status') }}",
-              success:function(data) {
-                this_obj.bootstrapToggle('enable');
+        data:{
+          category_uuid: category_uuid
+        },
+        url: "{{ route('category.change-status') }}",
+        success:function(data) {
+          this_obj.bootstrapToggle('enable');
 
-                if( data.status == 'failed' ){
-                  swal_fire_error(data.error.message);
-                  return false;
-                }
-                else if( data.status == 'success' ){
-                  swal_fire_success('Category status updated successfully!');
-                }
-              }
+          if( data.status == 'failed' ){
+            swal_fire_error(data.error.message);
+            return false;
+          }
+          else if( data.status == 'success' ){
+            swal_fire_success('Category status updated successfully!');
+          }
+        }
       });
     });
     //+++++++++++++++++++ UPDATE CATEGORY STATUS :: End +++++++++++++++++++//
@@ -164,22 +196,22 @@
           $.ajax({
             dataType: 'json',
             type: 'POST',
-                  data:{
-                    category_uuid: category_uuid
-                  },
-                  url: "{{ route('delete-category') }}",
-                  success:function(data) {
-                    this_obj.bootstrapToggle('enable');
+            data:{
+              category_uuid: category_uuid
+            },
+            url: "{{ route('category.delete-item') }}",
+            success:function(data) {
+              this_obj.bootstrapToggle('enable');
 
-                    if( data.status == 'failed' ){
-                      swal_fire_error(data.error.message);
-                      return false;
-                    }
-                    else if( data.status == 'success' ){
-                      swal_fire_success('Category deleted successfully!');
-                      $(this_obj).parents('tr').fadeOut('slow');
-                    }
-                  }
+              if( data.status == 'failed' ){
+                swal_fire_error(data.error.message);
+                return false;
+              }
+              else if( data.status == 'success' ){
+                swal_fire_success('Category deleted successfully!');
+                $(this_obj).parents('tr').fadeOut('slow');
+              }
+            }
           });
         }
       });

@@ -2,7 +2,7 @@ function swal_fire_error(error_msg){
     Swal.fire({
         icon: 'error',
         title: 'Oops...',
-        text: error_msg,
+        html: error_msg,
     });
 }
 

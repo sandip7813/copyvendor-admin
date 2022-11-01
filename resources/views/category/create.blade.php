@@ -1,9 +1,5 @@
 @extends('layouts.app')
 
-@section('stylesheets')
-<link rel="stylesheet" href="{{ asset('plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css') }}">
-@endsection
-
 @section('content')
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
@@ -64,9 +60,6 @@
 @endsection
 
 @section('scripts')
-<script src="{{ asset('js/sweetalert2@11.js') }}"></script>
-<script src="{{ asset('plugins/sweetalert2/sweetalert2.min.js') }}"></script>
-
 <script>
   $(function () {
     $('#add-category-submit').on('click', function(){
@@ -103,25 +96,25 @@
       $.ajax({
         dataType: 'json',
         type: 'POST',
-              data:{
-                category_title: category_title
-              },
-              url: "{{ route('add-category-submit') }}",
-              success:function(data) {
-                if( data.status == 'failed' ){
-                  swal_fire_error(data.error.message);
-                  return false;
-                }
-                else if( data.status == 'success' ){
-                  swal_fire_success('Categories created successfully!');
+        data:{
+          category_title: category_title
+        },
+        url: "{{ route('category.add-submit') }}",
+        success:function(data) {
+          if( data.status == 'failed' ){
+            swal_fire_error(data.error.message);
+            return false;
+          }
+          else if( data.status == 'success' ){
+            swal_fire_success('Categories created successfully!');
 
-                  $('#category_title_wrap').html('');
-                  add_row_html();
-                }
+            $('#category_title_wrap').html('');
+            add_row_html();
+          }
 
-                $('.btn').attr('disabled', false);
-                this_obj.html('Submit');
-              }
+          $('.btn').attr('disabled', false);
+          this_obj.html('Submit');
+        }
       });
       //
     });

@@ -12,7 +12,16 @@ class Categories extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['uuid', 'name', 'slug', 'type'];
+    protected $fillable = ['name', 'slug'];
+
+    public static function boot(){
+        parent::boot();
+
+        self::creating(function ($model) {
+            $model->uuid = (string) Str::uuid();
+            $model->type = 'blog';
+        });
+    }
 
     public static function generateSlug($name){
         $slug = Str::slug($name);
