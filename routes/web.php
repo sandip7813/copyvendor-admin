@@ -23,7 +23,8 @@ Route::namespace('Admin')->middleware(['auth'])->group(function () {
     Route::get('/dashboard', 'HomeController@dashboard')->name('dashboard');
 
     //+++++++++++++++++++++++++ CATEGORIES :: Start +++++++++++++++++++++++++//
-    Route::resource('category', 'CategoryController')->except(['store', 'show', 'update', 'destroy']);
+    Route::resource('category', 'CategoryController')->except(['index', 'store', 'show', 'update', 'destroy']);
+    Route::get('categories', 'CategoryController@index')->name('category.index');
     Route::post('category/add-submit', 'CategoryController@addCategorySubmit')->name('category.add-submit');
     Route::post('category/update-submit', 'CategoryController@updateCategorySubmit')->name('category.update-submit');
     Route::post('category/change-status', 'CategoryController@changeCategoryStatus')->name('category.change-status');
@@ -32,7 +33,7 @@ Route::namespace('Admin')->middleware(['auth'])->group(function () {
     //+++++++++++++++++++++++++ CATEGORIES :: End +++++++++++++++++++++++++//
 
     //+++++++++++++++++++++++++ BLOGS :: Start +++++++++++++++++++++++++//
-    Route::get('blog/index', 'BlogController@index')->name('blog.index');
+    Route::get('blogs', 'BlogController@index')->name('blog.index');
     Route::get('blog/create', 'BlogController@create')->name('blog.create');
     Route::post('blog/submit', 'BlogController@blogSubmit')->name('blog.submit');
     Route::post('blog/change-status', 'BlogController@changeStatus')->name('blog.change-status');
@@ -42,6 +43,17 @@ Route::namespace('Admin')->middleware(['auth'])->group(function () {
     Route::post('blog/regenerate-slug', 'BlogController@regenerateSlug')->name('blog.regenerate-slug');
     Route::post('blog/update-submit', 'BlogController@updateBlogSubmit')->name('blog.update-submit');
     //+++++++++++++++++++++++++ BLOGS :: End +++++++++++++++++++++++++//
+
+    //+++++++++++++++++++++++++ SERVICES :: Start +++++++++++++++++++++++++//
+    Route::get('services', 'ServiceController@index')->name('service.index');
+    Route::get('service/create', 'ServiceController@create')->name('service.create');
+    Route::post('service/submit', 'ServiceController@serviceSubmit')->name('service.submit');
+    Route::post('service/change-status', 'ServiceController@changeStatus')->name('service.change-status');
+    Route::post('service/delete-item', 'ServiceController@deleteService')->name('service.delete-item');
+    Route::get('service/{uuid}/edit', 'ServiceController@edit')->name('service.edit');
+    Route::post('service/regenerate-slug', 'ServiceController@regenerateSlug')->name('service.regenerate-slug');
+    Route::post('service/{uuid}/update-submit', 'ServiceController@updateServiceSubmit')->name('service.update-submit');
+    //+++++++++++++++++++++++++ SERVICES :: End +++++++++++++++++++++++++//
 });
 
 Route::get('/phpinfo', function() {

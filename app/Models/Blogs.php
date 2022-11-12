@@ -15,7 +15,7 @@ class Blogs extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['category_id', 'title', 'slug', 'content'];
+    protected $fillable = ['category_id', 'title', 'slug', 'content', 'page_title', 'metadata', 'keywords'];
 
     public static function boot(){
         parent::boot();

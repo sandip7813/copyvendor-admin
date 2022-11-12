@@ -8,20 +8,29 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Categories extends Model
-{
-    use HasFactory, SoftDeletes;
+use Staudenmeir\LaravelAdjacencyList\Eloquent\HasRecursiveRelationships;
 
-    protected $fillable = ['name', 'slug', 'content', 'page_title', 'metadata', 'keywords'];
+class Services extends Model
+{
+    use HasFactory, SoftDeletes, HasRecursiveRelationships;
+
+    protected $fillable = ['title', 'slug', 'parent_id', 'icon_class', 'content', 'page_title', 'metadata', 'keywords'];
 
     public static function boot(){
         parent::boot();
 
         self::creating(function ($model) {
             $model->uuid = (string) Str::uuid();
-            $model->type = 'blog';
         });
     }
+
+    /* public function getParentKeyName(){
+        return 'parent_id';
+    }
+
+    public function getLocalKeyName(){
+        return 'id';
+    } */
 
     public static function generateSlug($name){
         $slug = Str::slug($name);

@@ -28,7 +28,32 @@
             </a>
           </li>
 
-          <li class="nav-item @if (Request::is('blog') || Request::is('blog/*')) menu-open @endif">
+          {{-- +++++++++++++++++++++++++ SERVICES :: Start +++++++++++++++++++++++++ --}}
+          <li class="nav-item @if (Request::is('service') || Request::is('services') || Request::is('service/*')) menu-open @endif">
+            <a href="javascript: void(0);" class="nav-link @if (Request::is('service/*')) active @endif">
+              <i class="nav-icon fas fa-sitemap"></i>
+              <p>Services <i class="right fas fa-angle-left"></i></p>
+            </a>
+
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{{ route('service.index') }}" class="nav-link @if (Request::is('services')) active @endif">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Manage Services</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{{ route('service.create') }}" class="nav-link @if (Request::is('service/create')) active @endif">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Add Service</p>
+                </a>
+              </li>
+            </ul>
+          </li>
+          {{-- +++++++++++++++++++++++++ SERVICES :: End +++++++++++++++++++++++++ --}}
+
+          {{-- +++++++++++++++++++++++++ BLOGS :: Start +++++++++++++++++++++++++ --}}
+          <li class="nav-item @if (Request::is('blog') || Request::is('blogs') || Request::is('blog/*')) menu-open @endif">
             <a href="javascript: void(0);" class="nav-link @if (Request::is('blog/*')) active @endif">
               <i class="nav-icon fas fa-newspaper"></i>
               <p>Blogs <i class="right fas fa-angle-left"></i></p>
@@ -36,7 +61,7 @@
 
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="{{ route('blog.index') }}" class="nav-link @if (Request::is('blog/index')) active @endif">
+                <a href="{{ route('blog.index') }}" class="nav-link @if (Request::is('blogs')) active @endif">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Manage Blogs</p>
                 </a>
@@ -49,8 +74,10 @@
               </li>
             </ul>
           </li>
+          {{-- +++++++++++++++++++++++++ BLOGS :: End +++++++++++++++++++++++++ --}}
 
-          <li class="nav-item @if (Request::is('category') || Request::is('category/*')) menu-open @endif">
+          {{-- +++++++++++++++++++++++++ CATEGORIES :: Start +++++++++++++++++++++++++ --}}
+          <li class="nav-item @if (Request::is('category') || Request::is('categories') || Request::is('category/*')) menu-open @endif">
             <a href="javascript: void(0);" class="nav-link @if (Request::is('category/*')) active @endif">
               <i class="nav-icon fas fa-th"></i>
               <p>Categories <i class="right fas fa-angle-left"></i></p>
@@ -58,7 +85,7 @@
 
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="{{ route('category.index') }}" class="nav-link @if (Request::is('category')) active @endif">
+                <a href="{{ route('category.index') }}" class="nav-link @if (Request::is('categories')) active @endif">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Manage Categories</p>
                 </a>
@@ -71,6 +98,7 @@
               </li>
             </ul>
           </li>
+          {{-- +++++++++++++++++++++++++ CATEGORIES :: End +++++++++++++++++++++++++ --}}
 
           {{-- LOGOUT :: Start --}}
           <li class="nav-item">

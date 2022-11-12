@@ -11,7 +11,7 @@ class Images extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['type', 'item_id', 'title'];
+    protected $fillable = ['type', 'item_id', 'title', 'alt_tag'];
 
     public function blog(){
         return $this->belongsTo(Blogs::class, 'item_id');
