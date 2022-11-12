@@ -107,6 +107,9 @@ class BlogController extends Controller
                         'title' => $request->blog_title,
                         'slug' => Blogs::generateSlug($request->blog_title),
                         'content' => $request->blog_content,
+                        'page_title' => $request->page_title ?? null,
+                        'metadata' => $request->metadata ?? null,
+                        'keywords' => $request->keywords ?? null,
                     ]);
             
             $banner = Images::create([
@@ -299,6 +302,9 @@ class BlogController extends Controller
             $blog_slug = $request->blog_slug ?? '';
             $blog_category = $request->blog_category ?? '';
             $blog_content = $request->blog_content ?? '';
+            $page_title = $request->page_title ?? NULL;
+            $metadata = $request->metadata ?? NULL;
+            $keywords = $request->keywords ?? NULL;
             $blog_status = $request->blog_status ?? null;
 
             if( empty($blog_title) ){
@@ -328,6 +334,9 @@ class BlogController extends Controller
             $blog->slug = $blog_slug;
             $blog->category_id = $blog_category;
             $blog->content = $blog_content;
+            $blog->page_title = $page_title;
+            $blog->metadata = $metadata;
+            $blog->keywords = $keywords;
             $blog->status = $blog_status;
             $blog->save();            
 

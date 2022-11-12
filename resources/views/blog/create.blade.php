@@ -68,6 +68,21 @@
                   <div class="input-group mb-3 title_row">
                     <input class="form-control" type="file" name="banner">
                   </div>
+
+                  <label>Page Title</label>
+                  <div class="input-group mb-3 title_row">
+                    <input type="text" name="page_title" class="form-control mr-2" placeholder="Page Title">
+                  </div>
+
+                  <label>Meta Data</label>
+                  <div class="input-group mb-3 title_row">
+                    <textarea name="metadata" id="metadata" class="form-control" rows="3" placeholder="Enter Meta Data"></textarea>
+                  </div>
+
+                  <label>Keywords</label>
+                  <div class="input-group mb-3 title_row">
+                    <textarea name="keywords" id="keywords" class="form-control" rows="3" placeholder="Enter Keywords"></textarea>
+                  </div>
                 </div>
 
                 <!-- /.card-body -->

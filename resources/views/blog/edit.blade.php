@@ -78,6 +78,21 @@
 
                   <label>Blog Content</label>
                   <textarea name="blog_content" id="blog_content">{{ $blog->content }}</textarea>
+
+                  <label>Page Title</label>
+                  <div class="input-group mb-3 title_row">
+                    <input type="text" name="page_title" class="form-control mr-2" value="{{ $blog->page_title }}" placeholder="Page Title">
+                  </div>
+
+                  <label>Meta Data</label>
+                  <div class="input-group mb-3 title_row">
+                    <textarea name="metadata" id="metadata" class="form-control" rows="3" placeholder="Enter Meta Data">{{ $blog->metadata }}</textarea>
+                  </div>
+
+                  <label>Keywords</label>
+                  <div class="input-group mb-3 title_row">
+                    <textarea name="keywords" id="keywords" class="form-control" rows="3" placeholder="Enter Keywords">{{ $blog->keywords }}</textarea>
+                  </div>
                   
                   <label>Status</label>
                   <div class="input-group mb-3 title_row">
@@ -177,8 +192,11 @@
       slug_editable = $('input[name="slug_editable"]:checked').val();
       blog_slug = blog_slug_field.val().trim();
       blog_category = blog_category.val()
-      blog_status = $('input[name="blog_status"]:checked').val();
       blog_content_text = blog_content.summernote('code');
+      page_title = $('input[name="page_title"]').val();
+      metadata = $('#metadata').val();
+      keywords = $('#keywords').val();
+      blog_status = $('input[name="blog_status"]:checked').val();
 
       if( blog_title == '' ){
         swal_fire_error('No blog title found!');
@@ -210,6 +228,9 @@
           blog_slug: blog_slug,
           blog_category: blog_category,
           blog_content: blog_content_text,
+          page_title: page_title,
+          metadata: metadata,
+          keywords: keywords,
           blog_status: blog_status,
         },
         url: "{{ route('blog.update-submit') }}",
