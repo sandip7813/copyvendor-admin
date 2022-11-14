@@ -165,6 +165,7 @@
           else if( data.status == 'success' ){
             swal_fire_success('Service added successfully!');
             add_service_form[0].reset();
+            content.summernote('reset');
             $('#parent_service').val(0).trigger('change');
           }
         }

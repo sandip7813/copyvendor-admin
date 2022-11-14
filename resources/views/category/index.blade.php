@@ -76,6 +76,7 @@
                       <tr>
                         <th>Title</th>
                         <th>Slug</th>
+                        <th>Total Blogs</th>
                         <th class="no-sort">Status</th>
                         <th class="no-sort">Action</th>
                       </tr>
@@ -85,13 +86,20 @@
                         <tr>
                           <td>{{ $cat->name }}</td>
                           <td>{{ $cat->slug }}</td>
+                          <td>{{ $cat->blogs->count() }}</td>
                           <td>
-                            <input type="checkbox" name="cat_status" class="status_toggle" data-onstyle="success" data-offstyle="danger" data-on="Active" data-off="Inactive" data-size="mini" data-width="80" data-uuid="{{ $cat->uuid }}" @if($cat->status == 1) checked @endif data-toggle="toggle">
+                            @if( $cat->blogs->count() == 0 )
+                              <input type="checkbox" name="cat_status" class="status_toggle" data-onstyle="success" data-offstyle="danger" data-on="Active" data-off="Inactive" data-size="mini" data-width="80" data-uuid="{{ $cat->uuid }}" @if($cat->status == 1) checked @endif data-toggle="toggle">
+                            @else
+                              @if( $cat->status == 1 ) Active @else Inactive @endif
+                            @endif
                           </td>
                           <td>
                             <a href="{{ route('category.edit', $cat->uuid) }}" data-toggle="tooltip" data-placement="top" title="Edit this Category info"><i class="fas fa-edit"></i></a>
-                            &nbsp;&nbsp;&nbsp;
-                            <a href="javascript: void(0);" data-toggle="tooltip" data-placement="top" title="Delete this Category" class="delete_category" data-uuid="{{ $cat->uuid }}"><i class="fas fa-trash-alt"></i></a>
+                            @if( $cat->blogs->count() == 0 )
+                              &nbsp;&nbsp;&nbsp;
+                              <a href="javascript: void(0);" data-toggle="tooltip" data-placement="top" title="Delete this Category" class="delete_category" data-uuid="{{ $cat->uuid }}"><i class="fas fa-trash-alt"></i></a>
+                            @endif
                           </td>
                         </tr>
                       @endforeach
@@ -100,6 +108,7 @@
                       <tr>
                         <th>Title</th>
                         <th>Slug</th>
+                        <th>Total Blogs</th>
                         <th>Status</th>
                         <th>Action</th>
                       </tr>

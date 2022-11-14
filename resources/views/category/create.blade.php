@@ -1,5 +1,10 @@
 @extends('layouts.app')
 
+@section('stylesheets')
+<!-- summernote -->
+<link rel="stylesheet" href="{{ asset('plugins/summernote/summernote-bs4.min.css') }}">
+@endsection
+
 @section('content')
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
@@ -25,9 +30,9 @@
     <section class="content">
       <div class="container-fluid">
         <div class="row">
-          <div class="col-md-3"></div>
+          <div class="col-md-2"></div>
 
-          <div class="col-md-6">
+          <div class="col-md-8">
 
             <!-- Input addon -->
             <div class="card card-info">
@@ -35,11 +40,35 @@
                     <h3 class="card-title">Enter Category Title</h3>
                 </div>
                 <form id="add-category-form" action="javascript: void(0);">
-                    <div class="card-body" id="category_title_wrap"></div>
+                    <div class="card-body">
+                        <label>Category Title</label>
+                        <div class="input-group mb-3 title_row">
+                            <input type="text" name="category_name" class="form-control mr-2" placeholder="Category Title">
+                        </div>
+
+                        <label>Content</label>
+                        <div class="input-group mb-3 title_row">
+                          <textarea name="content" id="content"></textarea>
+                        </div>
+
+                        <label>Page Title</label>
+                        <div class="input-group mb-3 title_row">
+                          <input type="text" name="page_title" class="form-control mr-2" placeholder="Page Title">
+                        </div>
+
+                        <label>Meta Data</label>
+                        <div class="input-group mb-3 title_row">
+                          <textarea name="metadata" id="metadata" class="form-control" rows="3" placeholder="Enter Meta Data"></textarea>
+                        </div>
+
+                        <label>Keywords</label>
+                        <div class="input-group mb-3 title_row">
+                          <textarea name="keywords" id="keywords" class="form-control" rows="3" placeholder="Enter Keywords"></textarea>
+                        </div>
+                    </div>
 
                     <!-- /.card-body -->
                     <div class="card-footer">
-                        <button type="button" class="btn btn-info" data-toggle="tooltip" data-placement="top" title="Add a new row" onclick="add_row_html()"><i class="fas fa-plus-square"></i>&nbsp;&nbsp;Add More</button>
                         <button type="submit" class="btn btn-success float-right" id="add-category-submit">Submit</button>
                     </div>
                 </form>
@@ -48,7 +77,7 @@
           </div>
           <!--/.col (left) -->
 
-          <div class="col-md-3"></div>
+          <div class="col-md-2"></div>
 
         </div>
         <!-- /.row -->
@@ -60,31 +89,26 @@
 @endsection
 
 @section('scripts')
+<!-- Summernote -->
+<script src="{{ asset('plugins/summernote/summernote-bs4.min.js') }}"></script>
 <script>
   $(function () {
-    $('#add-category-submit').on('click', function(){
-      this_obj = $(this);
-      var category_title = [];
-      category_title_field = $("input[name='category_title[]']");
+    content = $('#content');
+    // Summernote
+    content.summernote({
+      height: 300
+    });
 
-      if( category_title_field.length == 0 ){
-        swal_fire_error('No category title found!');
-        return false;
-      }
+    add_service_form = $('#add-category-form');
 
-      category_title_field.each(function() {
-          var value = $(this).val();
-          if (value) {
-              category_title.push(value);
-          }
-      });
-      if (category_title.length === 0) {
-        swal_fire_error('No category title found!');
-        return false;
-      }
+    //++++++++++++++++++++ SUBMIT FORM :: Start ++++++++++++++++++++//
+    add_service_form.submit(function(e){
+      add_category_btn = $('#add-category-submit');
 
-      this_obj.html('<i class="fa fa-spinner" aria-hidden="true"></i> Processing');
-      $('.btn').attr('disabled', true);
+      e.preventDefault();
+      var formData = new FormData(this);
+
+      add_category_btn.html('<i class="fa fa-spinner" aria-hidden="true"></i> Submitting...').attr('disabled', true);
 
       //
       $.ajaxSetup({
@@ -96,60 +120,33 @@
       $.ajax({
         dataType: 'json',
         type: 'POST',
-        data:{
-          category_title: category_title
-        },
+        data: formData,
         url: "{{ route('category.add-submit') }}",
+        cache: false,
+        contentType: false,
+        processData: false,
         success:function(data) {
+          add_category_btn.html('Submit').attr('disabled', false);
+
           if( data.status == 'failed' ){
             swal_fire_error(data.error.message);
             return false;
           }
           else if( data.status == 'success' ){
-            swal_fire_success('Categories created successfully!');
+            swal_fire_success('Category added successfully!');
 
-            $('#category_title_wrap').html('');
-            add_row_html();
+            add_service_form[0].reset();
+            content.summernote('reset');
           }
 
           $('.btn').attr('disabled', false);
-          this_obj.html('Submit');
+          add_category_btn.html('Submit');
         }
       });
       //
     });
+    //++++++++++++++++++++ SUBMIT FORM :: End ++++++++++++++++++++//
   });
 
-  add_row_html();
-
-  function add_row_html(){
-    html_string = '<div class="input-group mb-3 title_row">';
-    html_string += '<input type="text" name="category_title[]" class="form-control" placeholder="Category Title">';
-    html_string += '<div class="input-group-append">';
-    html_string += '<span class="input-group-text"><a href="javascript:void(0);" data-toggle="tooltip" data-placement="top" title="Remove this row" onclick="remove_row(this)"><i class="fas fa-trash-alt"></i></a></span>';
-    html_string += '</div>';
-    html_string += '</div>';
-
-    $('#category_title_wrap').append(html_string);
-  }
-
-  function remove_row(this_obj){
-    category_title_field = $("input[name='category_title[]']");
-
-    if( category_title_field.length == 1 ){
-      swal_fire_error('You can\'t delete all category titles!');
-      return false;
-    }
-
-    Swal.fire({
-      title: 'Do you want to delete this row?',
-      showCancelButton: true,
-      confirmButtonText: 'Yes, Delete',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        $(this_obj).parents('.title_row').remove();
-      }
-    });
-  }
 </script>
 @endsection

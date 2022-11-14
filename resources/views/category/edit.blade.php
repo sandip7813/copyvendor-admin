@@ -3,6 +3,8 @@
 @section('stylesheets')
 <!-- iCheck for checkboxes and radio inputs -->
 <link rel="stylesheet" href="{{ asset('plugins/icheck-bootstrap/icheck-bootstrap.min.css') }}">
+<!-- summernote -->
+<link rel="stylesheet" href="{{ asset('plugins/summernote/summernote-bs4.min.css') }}">
 @endsection
 
 @section('content')
@@ -30,16 +32,16 @@
     <section class="content">
       <div class="container-fluid">
         <div class="row">
-          <div class="col-md-3"></div>
+          <div class="col-md-2"></div>
 
-          <div class="col-md-6">
+          <div class="col-md-8">
 
             <!-- Input addon -->
             <div class="card card-info">
                 <div class="card-header">
                     <h3 class="card-title title_wrap">{{ $category->name }}</h3>
                 </div>
-                <form id="add-category-form" action="javascript: void(0);">
+                <form id="edit-category-form" action="javascript: void(0);">
                     <div class="card-body">
                         <label>Category Title</label>
                         <div class="input-group mb-3 title_row">
@@ -61,17 +63,39 @@
                             </div>
                         </div>
 
-                        <label>Status</label>
+                        <label>Content</label>
                         <div class="input-group mb-3 title_row">
-                            <div class="icheck-success d-inline mr-5">
-                              <input type="radio" name="category_status" id="status_active" value="1" @if($category->status == '1')checked @endif>
-                              <label for="status_active">Active</label>
-                            </div>
-                            <div class="icheck-danger d-inline">
-                              <input type="radio" name="category_status" id="status_inactive" value="0" @if($category->status == '0')checked @endif>
-                              <label for="status_inactive">Inactive</label>
-                            </div>
+                          <textarea name="content" id="content">{{ $category->content }}</textarea>
                         </div>
+
+                        <label>Page Title</label>
+                        <div class="input-group mb-3 title_row">
+                          <input type="text" name="page_title" class="form-control mr-2" value="{{ $category->page_title }}" placeholder="Page Title">
+                        </div>
+
+                        <label>Meta Data</label>
+                        <div class="input-group mb-3 title_row">
+                          <textarea name="metadata" id="metadata" class="form-control" rows="3" placeholder="Enter Meta Data">{{ $category->metadata }}</textarea>
+                        </div>
+
+                        <label>Keywords</label>
+                        <div class="input-group mb-3 title_row">
+                          <textarea name="keywords" id="keywords" class="form-control" rows="3" placeholder="Enter Keywords">{{ $category->keywords }}</textarea>
+                        </div>
+
+                        @if( $category->blogs->count() == 0 )
+                          <label>Status</label>
+                          <div class="input-group mb-3 title_row">
+                              <div class="icheck-success d-inline mr-5">
+                                <input type="radio" name="category_status" id="status_active" value="1" @if($category->status == '1')checked @endif>
+                                <label for="status_active">Active</label>
+                              </div>
+                              <div class="icheck-danger d-inline">
+                                <input type="radio" name="category_status" id="status_inactive" value="0" @if($category->status == '0')checked @endif>
+                                <label for="status_inactive">Inactive</label>
+                              </div>
+                          </div>
+                        @endif
                     </div>
 
                     <!-- /.card-body -->
@@ -84,7 +108,7 @@
           </div>
           <!--/.col (left) -->
 
-          <div class="col-md-3"></div>
+          <div class="col-md-2"></div>
 
         </div>
         <!-- /.row -->
@@ -96,8 +120,16 @@
 @endsection
 
 @section('scripts')
+<!-- Summernote -->
+<script src="{{ asset('plugins/summernote/summernote-bs4.min.js') }}"></script>
 <script>
   $(function () {
+    content = $('#content');
+    // Summernote
+    content.summernote({
+      height: 300
+    });
+
     $.ajaxSetup({
       headers: {
         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -129,8 +161,6 @@
     //++++++++++++++++++++ REGENERATE SLUG :: End ++++++++++++++++++++//
 
     $('input[name="slug_editable"]').on('change', function(){
-      //category_slug = $('input[name="category_slug"]');
-
       if( $(this).is(':checked') ){
         category_slug_field.prop('disabled', false);
       }
@@ -139,41 +169,26 @@
       }
     });
 
+    //++++++++++++++++++++ SUBMIT FORM :: Start ++++++++++++++++++++//
+    $('#edit-category-form').submit(function(e){
+      update_category_btn = $('#update-category-submit');
 
-    $('#update-category-submit').on('click', function(){
-      category_name = $('input[name="category_name"]').val().trim();
-      slug_editable = $('input[name="slug_editable"]:checked').val();
-      category_slug = category_slug_field.val().trim();
-      category_status = $('input[name="category_status"]:checked').val();
+      e.preventDefault();
+      var formData = new FormData(this);
 
-      if( category_name == '' ){
-        swal_fire_error('No category title found!');
-        return false;
-      }
-
-      if( (slug_editable == 1) && (category_slug == '') ){
-        swal_fire_error('No category slug found!');
-        return false;
-      }
-
-      this_obj = $(this);
-
-      this_obj.html('<i class="fa fa-spinner" aria-hidden="true"></i> Updating...').attr('disabled', true);
+      update_category_btn.html('<i class="fa fa-spinner" aria-hidden="true"></i> Updating...').attr('disabled', true);
 
       //
       $.ajax({
         dataType: 'json',
         type: 'POST',
-        data:{
-          category_uuid: '{{ $category->uuid }}',
-          category_name: category_name,
-          slug_editable: slug_editable,
-          category_slug: category_slug,
-          category_status: category_status,
-        },
-        url: "{{ route('category.update-submit') }}",
+        data: formData,
+        url: "{{ route('category.update-submit', $category->uuid) }}",
+        cache: false,
+        contentType: false,
+        processData: false,
         success:function(data) {
-          this_obj.html('Update').attr('disabled', false);
+          update_category_btn.html('Update').attr('disabled', false);
 
           if( data.status == 'failed' ){
             swal_fire_error(data.error.message);
@@ -186,11 +201,12 @@
           }
 
           $('.btn').attr('disabled', false);
-          this_obj.html('Submit');
+          update_category_btn.html('Submit');
         }
       });
       //
     });
+    //++++++++++++++++++++ SUBMIT FORM :: End ++++++++++++++++++++//
     
   });
 

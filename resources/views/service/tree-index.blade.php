@@ -5,7 +5,7 @@
       <tr data-widget="expandable-table" aria-expanded="false">
         <td class=" border-top-0 @if (count($service['children']) == 0) border-bottom @endif  mb-0">
           <div class="row">
-            <div class="col-10">@if($call_via == 'root') <i class="fas fa-angle-right"></i> @endif @if($call_via == 'child') {{ $cnt }} ) @endif  {{ count($service['children']) }} :: {{ $service['title'] }}</div>
+            <div class="col-10">@if($call_via == 'root') <i class="fas fa-angle-right"></i> @endif @if($call_via == 'child') {{ $cnt }} ) @endif {{ $service['title'] }}</div>
             <div class="col-2">
               @if( count($service['children']) == 0 )
                 <input type="checkbox" name="service_status" class="status_toggle" data-onstyle="success" data-offstyle="danger" data-on="Active" data-off="Inactive" data-size="mini" data-width="80" data-uuid="{{ $service['uuid'] }}" @if($service['status'] == 1) checked @endif data-toggle="toggle">

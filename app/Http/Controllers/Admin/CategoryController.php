@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 
 use App\Models\Categories;
 
+use Validator;
+
 class CategoryController extends Controller
 {
     protected $statusArray = [
@@ -15,7 +17,7 @@ class CategoryController extends Controller
     ];
 
     public function index(Request $request){
-        $categories_qry = Categories::select('*');
+        $categories_qry = Categories::with('blogs');
 
         if( $request->filled('cat_title') ){
             $categories_qry->where('name', 'like', '%' . $request->cat_title . '%');
@@ -51,38 +53,26 @@ class CategoryController extends Controller
         $response['status'] = '';
 
         try {
-            $category_title = $request->category_title ?? [];
+            $validator_array = [];
 
-            //+++++++++++++++++++++++++ VALIDATION :: Start +++++++++++++++++++++++++//
-            if( empty($category_title) ){
-                return response()->json(['status' => 'failed', 'error' => ['message' => 'No category title found!']]);
+            $validator_array['category_name'] = 'required|max:255';
+
+            $validator = Validator::make($request->all(), $validator_array);
+
+            $validator_errors = implode('<br>', $validator->errors()->all());
+
+            if ($validator->fails()) {
+                return response()->json(['status' => 'failed', 'error' => ['message' => $validator_errors]]);
             }
 
-            if( !empty($category_title) ){
-                $cat_val_exists = 0;
-
-                foreach($category_title as $cat){
-                    if( trim($cat) != '' ){
-                        $cat_val_exists++;
-                    }
-                }
-
-                if( $cat_val_exists == 0 ){
-                    return response()->json(['status' => 'failed', 'error' => ['message' => 'No category title found!']]);
-                }
-            }
-            //+++++++++++++++++++++++++ VALIDATION :: End +++++++++++++++++++++++++//
-
-            if( count($category_title) > 0 ){
-                foreach($category_title as $cat){
-                    if( trim($cat) != '' ){
-                        Categories::create([
-                            'name' => $cat,
-                            'slug' => Categories::generateSlug($cat),
-                        ]);
-                    }
-                }
-            }
+            Categories::create([
+                'name' => $request->category_name,
+                'slug' => Categories::generateSlug($request->category_name),
+                'content' => $request->content ?? null,
+                'page_title' => $request->page_title ?? null,
+                'metadata' => $request->metadata ?? null,
+                'keywords' => $request->keywords ?? null,
+            ]);
 
             $response['status'] = 'success';
         } catch (\Exception $e) {
@@ -100,26 +90,30 @@ class CategoryController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function edit($uuid){
-        $category = Categories::where('uuid', $uuid)->first();
+        $category = Categories::with('blogs')->where('uuid', $uuid)->first();
 
         return view('category.edit', compact('category'));
     }
 
-    public function updateCategorySubmit(Request $request){
+    public function updateCategorySubmit(Request $request, $uuid){
         $response = [];
 
         $response['status'] = '';
 
         try {
-            $category_uuid = $request->category_uuid ?? '';
+            $category_uuid = $uuid ?? '';
 
             if( $category_uuid == '' ){
                 return response()->json(['status' => 'failed', 'error' => ['message' => 'No category found!']]);
             }
 
-            $category_name = $request->category_name ?? '';
+            $category_name = $request->category_name ? trim($request->category_name) : '';
             $slug_editable = $request->slug_editable ?? 0;
             $category_slug = $request->category_slug ?? '';
+            $content = $request->content ?? null;
+            $page_title = $request->page_title ?? null;
+            $metadata = $request->metadata ?? null;
+            $keywords = $request->keywords ?? null;
             $category_status = $request->category_status ?? null;
 
             if( empty($category_name) ){
@@ -143,11 +137,17 @@ class CategoryController extends Controller
                 return response()->json(['status' => 'failed', 'error' => ['message' => 'Invalid category status']]);
             }
 
-            $category = Categories::where('uuid', $category_uuid)->first();
+            $category = Categories::with('blogs')->where('uuid', $category_uuid)->first();
 
             $category->name = $category_name;
             $category->slug = $category_slug;
-            $category->status = $category_status;
+            $category->content = $content;
+            $category->page_title = $page_title;
+            $category->metadata = $metadata;
+            $category->keywords = $keywords;
+            if( $category->blogs->count() == 0 ){
+                $category->status = $category_status;
+            }
             $category->save();            
 
             $response['status'] = 'success';
@@ -195,7 +195,11 @@ class CategoryController extends Controller
                 return response()->json(['status' => 'failed', 'error' => ['message' => 'No category found!']]);
             }
 
-            $category = Categories::where('uuid', $category_uuid)->first();
+            $category = Categories::with('blogs')->where('uuid', $category_uuid)->first();
+
+            if( $category->blogs->count() > 0 ){
+                return response()->json(['status' => 'failed', 'error' => ['message' => 'You can\'t change the status of this category as this category has one or more blogs.']]);
+            }
 
             $category->status = ($category->status == '1') ? '0' : '1';
             $category->save();            
@@ -221,7 +225,12 @@ class CategoryController extends Controller
                 return response()->json(['status' => 'failed', 'error' => ['message' => 'No category found!']]);
             }
 
-            $category = Categories::where('uuid', $category_uuid)->first();
+            $category = Categories::with('blogs')->where('uuid', $category_uuid)->first();
+
+            if( $category->blogs->count() > 0 ){
+                return response()->json(['status' => 'failed', 'error' => ['message' => 'You can\'t delete this category as this category has one or more blogs.']]);
+            }
+
             $category->delete();            
 
             $response['status'] = 'success';

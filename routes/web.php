@@ -26,7 +26,7 @@ Route::namespace('Admin')->middleware(['auth'])->group(function () {
     Route::resource('category', 'CategoryController')->except(['index', 'store', 'show', 'update', 'destroy']);
     Route::get('categories', 'CategoryController@index')->name('category.index');
     Route::post('category/add-submit', 'CategoryController@addCategorySubmit')->name('category.add-submit');
-    Route::post('category/update-submit', 'CategoryController@updateCategorySubmit')->name('category.update-submit');
+    Route::post('category/{uuid}/update-submit', 'CategoryController@updateCategorySubmit')->name('category.update-submit');
     Route::post('category/change-status', 'CategoryController@changeCategoryStatus')->name('category.change-status');
     Route::post('category/delete-item', 'CategoryController@deleteCategory')->name('category.delete-item');
     Route::post('category/regenerate-slug', 'CategoryController@regenerateSlug')->name('category.regenerate-slug');

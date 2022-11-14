@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+use App\Models\Blogs;
+
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -22,6 +24,10 @@ class Categories extends Model
             $model->type = 'blog';
         });
     }
+
+    public function blogs(){
+        return $this->hasMany(Blogs::class, 'category_id', 'id');
+    }   
 
     public static function generateSlug($name){
         $slug = Str::slug($name);
